@@ -18,17 +18,11 @@ package com.ecwid.mailchimp;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
 
 /**
  * MailChimp API wrapper.
@@ -36,11 +30,12 @@ import com.google.gson.JsonParser;
  * @author Vasily Karyaev <v.karyaev@gmail.com>
  * @author James Broberg <jbroberg@gmail.com> (java.net.* client)
  */
-public class MailChimpGAEClient {
+public class MailChimpGAEClient extends MailChimpClient {
+	
 	private static final Logger log = Logger.getLogger(MailChimpGAEClient.class.getName());
 	HttpURLConnection conn = null;
 	
-	private String execute(String url, String request) throws IOException {
+	public String execute(String url, String request) throws IOException {
 		if(log.isLoggable(Level.FINE)) {
 			log.fine("Post to "+url+" : "+request);
 		}
@@ -79,51 +74,6 @@ public class MailChimpGAEClient {
 			log.fine("Response: "+response);
 		}
 		return response;
-	}
-	
-	private JsonElement execute(String url, JsonElement request) throws IOException {
-		return new JsonParser().parse(execute(url, request.toString()));
-	}
-	
-	/**
-	 * Execute MailChimp API method.
-	 * 
-	 * @param method MailChimp API method to be executed
-	 * @return execution result
-	 */
-	public <R> R execute(MailChimpMethod<R> method) throws IOException, MailChimpException {
-		final Gson gson = MailChimpGsonFactory.createGson();
-
-		JsonElement result = execute(buildUrl(method), gson.toJsonTree(method));
-		if(result.isJsonObject()) {
-			JsonElement error = result.getAsJsonObject().get("error");		
-			if(error != null) {
-				JsonElement code = result.getAsJsonObject().get("code");
-				throw new MailChimpException(code.getAsInt(), error.getAsString());
-			}
-		}
-		
-		return gson.fromJson(result, method.getResultType());
-	}
-	
-	private String buildUrl(MailChimpMethod<?> method) throws UnsupportedEncodingException {
-		String apikey = method.apikey;
-		if(apikey == null) throw new IllegalArgumentException("apikey is not set");
-		
-		String prefix;
-		int dash = apikey.lastIndexOf('-');
-		if(dash > 0) {
-			prefix = apikey.substring(dash + 1);
-		} else {
-			throw new IllegalArgumentException("Wrong apikey: "+apikey);
-		}
-		
-		StringBuilder sb = new StringBuilder();
-		sb.append("https://");
-		sb.append(prefix);
-		sb.append(".api.mailchimp.com/1.3/?method=");
-		sb.append(URLEncoder.encode(method.getMethodName(), "UTF-8"));
-		return sb.toString();
 	}
 	
 	/**

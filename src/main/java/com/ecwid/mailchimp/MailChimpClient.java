@@ -39,7 +39,7 @@ public class MailChimpClient {
 	
 	private final HttpClient http = new DefaultHttpClient();
 	
-	private String execute(String url, String request) throws IOException {
+	protected String execute(String url, String request) throws IOException {
 		if(log.isLoggable(Level.FINE)) {
 			log.fine("Post to "+url+" : "+request);
 		}
