@@ -15,41 +15,10 @@
  */
 package com.ecwid.mailchimp.method.list;
 
-import com.ecwid.mailchimp.MailChimpObject;
-import java.util.Date;
-
 /**
  *
  * @author Vasily Karyaev <v.karyaev@gmail.com>
  */
-public class MemberInfo extends MailChimpObject {
-	@Field
-	public String id;
-	
-	@Field
-	public String email;
-	
-	@Field
-	public EmailType email_type;
-	
-	@Field
-	public MailChimpObject merges;
-	
-	@Field
-	public MemberStatus status;
-	
-	@Field
-	public Date timestamp;
-	
-	/**
-	 * This field indicates email, associated with {@link #error}.
-	 */
-	@Field
-	public String email_address;
-
-	/**
-	 * Error message.
-	 */
-	@Field
-	public String error;
+public enum MergeVarType {
+	text, number, radio, dropdown, date, address, phone, url, imageurl, zip, birthday, email;
 }

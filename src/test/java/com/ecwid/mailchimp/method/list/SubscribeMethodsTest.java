@@ -33,17 +33,16 @@ import org.testng.annotations.Test;
 public class SubscribeMethodsTest extends AbstractMethodTestCase {
 	private static final Logger log = Logger.getLogger(SubscribeMethodsTest.class.getName());
 
-	/**
-	 * Max number of items in batch requests.
-	 */
-	private static final int MAX = 50;
-
 	private final String apiKey;
 	private final String listId;
 	
-	private class MergeVars extends MailChimpObject {
+	private static class MergeVars extends MailChimpObject {
 		@MailChimpObject.Field
 		private final String EMAIL, FNAME, LNAME;
+
+		private MergeVars() {
+			this(null, null, null);
+		}
 
 		public MergeVars(String email, String fname, String lname) {
 			this.EMAIL = email;
@@ -60,7 +59,7 @@ public class SubscribeMethodsTest extends AbstractMethodTestCase {
 
 	@BeforeMethod
 	private void cleanup() throws Exception {
-		listUnsubscribeBatch(0, MAX, true);
+		listUnsubscribeBatch(0, MAX_EMAILS, true);
 	}
 
 	@Test
@@ -79,7 +78,7 @@ public class SubscribeMethodsTest extends AbstractMethodTestCase {
 		assertEquals((int) batchUnsubscribeResult.error_count, 0);
 
 		ListMembersResult membersResult = listMembers(MemberStatus.subscribed);
-		assertTrue(membersResult.total >= 3, ""+membersResult.total);
+		assertEquals((int) membersResult.total, 3);
 
 		membersResult = listMembers(MemberStatus.unsubscribed);
 		assertEquals((int) membersResult.total, 2);
@@ -190,18 +189,5 @@ public class SubscribeMethodsTest extends AbstractMethodTestCase {
 		ListMembersResult result = client.execute(request);
 		log.info("Result: " + result);
 		return result;
-	}
-
-	private List<String> emails(int from, int count) {
-		List<String> result = new ArrayList<String>();
-		for(int i=from; i<from+count; i++) {
-			result.add(email(i));
-		}
-		return result;
-	}
-
-	private String email(int i) {
-		assertTrue(i >= 0 && i < MAX, ""+i);
-		return "test+"+i+"@gmail.com";
 	}
 }

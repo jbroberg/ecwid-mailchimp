@@ -15,41 +15,23 @@
  */
 package com.ecwid.mailchimp.method.list;
 
-import com.ecwid.mailchimp.MailChimpObject;
-import java.util.Date;
+import com.ecwid.mailchimp.MailChimpMethod;
 
 /**
+ * See http://apidocs.mailchimp.com/api/1.3/listmergevarupdate.func.php
  *
  * @author Vasily Karyaev <v.karyaev@gmail.com>
  */
-public class MemberInfo extends MailChimpObject {
+@MailChimpMethod.Name("listMergeVarUpdate")
+public class ListMergeVarUpdateMethod extends HasListIdMethod<Boolean> {
 	@Field
-	public String id;
-	
-	@Field
-	public String email;
-	
-	@Field
-	public EmailType email_type;
-	
-	@Field
-	public MailChimpObject merges;
-	
-	@Field
-	public MemberStatus status;
-	
-	@Field
-	public Date timestamp;
-	
-	/**
-	 * This field indicates email, associated with {@link #error}.
-	 */
-	@Field
-	public String email_address;
+	public String tag;
 
-	/**
-	 * Error message.
-	 */
 	@Field
-	public String error;
+	public MergeVarInfo options;
+
+	@Override
+	public Class<Boolean> getResultType() {
+		return Boolean.class;
+	}
 }
